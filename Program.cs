@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
+using BoltWebAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,23 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
               .AllowCredentials();
     });
+});
+
+// Configure Database
+var databaseProvider = builder.Configuration["Database:Provider"] ?? "SQLite";
+var connectionString = builder.Configuration["Database:ConnectionString"] 
+    ?? "Data Source=bolt.db";
+
+builder.Services.AddDbContext<BoltDbContext>(options =>
+{
+    if (databaseProvider.Equals("SQLite", StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseSqlite(connectionString);
+    }
+    else
+    {
+        throw new InvalidOperationException($"Unsupported database provider: {databaseProvider}");
+    }
 });
 
 // TODO: Register services and validators here

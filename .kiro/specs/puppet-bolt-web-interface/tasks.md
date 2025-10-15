@@ -7,7 +7,7 @@
   - Add required NuGet packages: Entity Framework Core, JWT Authentication, FluentValidation, Serilog, SignalR
   - _Requirements: 1.1, 5.1_
 
-- [ ] 2. Implement database layer and entities
+- [x] 2. Implement database layer and entities
   - Create DbContext class with DbSets for ExecutionHistory, User, RefreshToken, ConfigurationChange
   - Define entity models: ExecutionHistoryEntity, UserEntity, RefreshTokenEntity, ConfigurationChangeEntity
   - Configure entity relationships and indexes

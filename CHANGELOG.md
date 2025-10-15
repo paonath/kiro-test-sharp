@@ -26,6 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Setup guide documentation in .kiro/docs/
 - launchSettings.json for development environment configuration
 - .gitkeep files to preserve empty directory structure
+- BoltDbContext with DbSets for ExecutionHistory, Users, RefreshTokens, and ConfigurationChanges
+- Entity models: ExecutionHistoryEntity with execution tracking and state management
+- Entity models: UserEntity with authentication and role-based access control
+- Entity models: RefreshTokenEntity with token management and revocation support
+- Entity models: ConfigurationChangeEntity for audit trail of configuration changes
+- Entity relationships and foreign key constraints (User -> RefreshTokens)
+- Database indexes for optimized queries on common access patterns (UserId, StartedAt, State, etc.)
+- Enum types for ExecutionType (Command, Task, Plan) and ExecutionState (Queued, Running, Completed, Failed, Cancelled)
+- Initial database migration (20251015135933_InitialCreate) with complete schema
+- DbContext registration in Program.cs with SQLite configuration
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
@@ -34,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated implementation tasks to include FluentValidation validators for all request models
 - Enhanced project structure documentation to include `.kiro/` directory organization
 - Marked task 1 (project setup and core configuration) as completed in tasks.md
+- Marked task 2 (database layer and entities) as completed in tasks.md
 
 ### Removed
 - Migration guide moved from specs to docs directory for better organization
