@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "name": "Auto Commit",
+  "description": "Automatically commits changes to git when files in the workspace are modified",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "**/*.cs",
+      "**/*.json",
+      "**/*.md",
+      "**/*.csproj",
+      "**/*.sln"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Files have been modified in the workspace. Review the changes using 'git status' and 'git diff'. Then:\n1. Update the CHANGELOG.md file with a summary of the changes made\n2. Stage all changes including the changelog using 'git add'\n3. Create an appropriate commit message following conventional commit format and commit the changes using 'git commit'"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Pre-commit Preparation",
+  "description": "Automatically prepares code for git commit by running code formatting, linting checks, and ensuring the project builds successfully before committing",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "**/*.cs",
+      "**/*.csproj",
+      "**/appsettings*.json"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Review the changed C# files and configuration. Before the user commits to git:\n1. Check for any obvious code quality issues (unused imports, inconsistent naming, missing error handling)\n2. Verify that all async methods follow proper patterns and have Async suffix\n3. Ensure proper logging is in place for important operations\n4. Check that security best practices are followed (no hardcoded secrets, proper input validation)\n5. Verify adherence to the project's naming conventions and structure\n6. Suggest running 'dotnet build' and 'dotnet test' to ensure everything compiles and tests pass\n7. Provide a concise summary of what should be verified before committing"
+  }
+}
