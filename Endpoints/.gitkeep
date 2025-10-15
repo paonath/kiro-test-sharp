@@ -1,0 +1,2 @@
+# Endpoint definitions will be added here
+# Each endpoint class will have a MapEndpoints method to register routes
