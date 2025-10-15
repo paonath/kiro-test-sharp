@@ -4,7 +4,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
+using FluentValidation;
 using BoltWebAPI.Data;
+using BoltWebAPI.Endpoints;
+using BoltWebAPI.Services.Interfaces;
+using BoltWebAPI.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,8 +111,11 @@ builder.Services.AddDbContext<BoltDbContext>(options =>
     }
 });
 
-// TODO: Register services and validators here
-// Services will be registered as tasks are implemented
+// Register FluentValidation validators
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+// Register services
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 
@@ -127,8 +134,8 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// TODO: Map endpoint groups here
-// Endpoints will be mapped as tasks are implemented
+// Map endpoint groups
+AuthEndpoints.MapEndpoints(app);
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))

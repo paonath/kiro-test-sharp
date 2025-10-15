@@ -36,6 +36,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enum types for ExecutionType (Command, Task, Plan) and ExecutionState (Queued, Running, Completed, Failed, Cancelled)
 - Initial database migration (20251015135933_InitialCreate) with complete schema
 - DbContext registration in Program.cs with SQLite configuration
+- IAuthenticationService interface with methods for authentication, token refresh, validation, and revocation
+- AuthenticationService implementation with JWT token generation and BCrypt password hashing
+- JWT access token generation with configurable expiration and claims (user ID, username, role)
+- Secure refresh token generation using cryptographic random number generator
+- Token refresh flow with automatic revocation of old refresh tokens
+- AuthEndpoints with three endpoints: POST /api/auth/login, POST /api/auth/refresh, POST /api/auth/logout
+- LoginRequestValidator for validating login credentials
+- RefreshTokenRequestValidator for validating refresh token requests
+- FluentValidation integration in Program.cs with automatic validator registration
+- ErrorResponse model for structured error handling with validation error support
+- Comprehensive logging for authentication events (login, token refresh, logout, failures)
+- Service registration for IAuthenticationService in Program.cs with scoped lifetime
+- Endpoint mapping for AuthEndpoints in Program.cs
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
@@ -45,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced project structure documentation to include `.kiro/` directory organization
 - Marked task 1 (project setup and core configuration) as completed in tasks.md
 - Marked task 2 (database layer and entities) as completed in tasks.md
+- Marked task 3 (authentication and authorization) as completed in tasks.md including all subtasks (3.1, 3.2, 3.3)
 
 ### Removed
 - Migration guide moved from specs to docs directory for better organization

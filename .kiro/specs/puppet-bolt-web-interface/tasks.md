@@ -14,21 +14,21 @@
   - Create initial database migration
   - _Requirements: 6.1, 5.1_
 
-- [ ] 3. Implement authentication and authorization
-  - [ ] 3.1 Create authentication service and JWT token generation
+- [x] 3. Implement authentication and authorization
+  - [x] 3.1 Create authentication service and JWT token generation
     - Implement IAuthenticationService with login, token refresh, and validation methods
     - Create JWT token generation logic with configurable expiration
     - Implement password hashing using BCrypt
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 3.2 Create AuthEndpoints for login and token management
+  - [x] 3.2 Create AuthEndpoints for login and token management
     - Implement POST /api/auth/login endpoint
     - Implement POST /api/auth/refresh endpoint for token refresh
     - Implement POST /api/auth/logout endpoint
     - Add LoginRequestValidator for request validation
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 3.3 Configure JWT authentication middleware
+  - [x] 3.3 Configure JWT authentication middleware
     - Add JWT bearer authentication to the pipeline
     - Configure token validation parameters
     - Set up role-based authorization policies
