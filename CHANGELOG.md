@@ -15,3 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Steering rules for technology stack (ASP.NET Core 8.0, C# 12, Entity Framework Core, SignalR)
 - Steering rules for project structure and conventions
 - Product overview documentation
+- Kiro documentation structure with dedicated `.kiro/` directory for specs, docs, steering rules, and settings
+
+### Changed
+- Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
+- Replaced data annotation validation with FluentValidation for better separation of concerns
+- Updated design document to reflect Minimal API patterns with `Results<T>` return types
+- Updated implementation tasks to include FluentValidation validators for all request models
+- Enhanced project structure documentation to include `.kiro/` directory organization
+
+### Removed
+- Migration guide moved from specs to docs directory for better organization

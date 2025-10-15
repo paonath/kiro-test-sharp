@@ -2,9 +2,9 @@
 
 - [ ] 1. Set up project structure and core configuration
   - Create ASP.NET Core Web API project with .NET 8.0
-  - Configure project structure with folders: Controllers, Services, Models, Data, Middleware
+  - Configure project structure with folders: Endpoints, Services, Models, Validators, Data, Middleware
   - Set up appsettings.json with Bolt, Authentication, Database, and Logging configuration
-  - Add required NuGet packages: Entity Framework Core, JWT Authentication, Serilog, SignalR
+  - Add required NuGet packages: Entity Framework Core, JWT Authentication, FluentValidation, Serilog, SignalR
   - _Requirements: 1.1, 5.1_
 
 - [ ] 2. Implement database layer and entities
@@ -21,10 +21,11 @@
     - Implement password hashing using BCrypt
     - _Requirements: 5.1, 5.2_
   
-  - [ ] 3.2 Create AuthController for login and token management
+  - [ ] 3.2 Create AuthEndpoints for login and token management
     - Implement POST /api/auth/login endpoint
     - Implement POST /api/auth/refresh endpoint for token refresh
     - Implement POST /api/auth/logout endpoint
+    - Add LoginRequestValidator for request validation
     - _Requirements: 5.1, 5.2_
   
   - [ ] 3.3 Configure JWT authentication middleware
@@ -90,48 +91,52 @@
   - Log configuration changes with user information
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 9. Implement BoltCommandController
-  - Create controller with [Authorize] attribute
+- [ ] 9. Implement BoltCommandEndpoints
+  - Create endpoint group with authorization
   - Implement POST /api/bolt/commands/execute endpoint
   - Implement GET /api/bolt/commands/{executionId}/status endpoint
   - Implement POST /api/bolt/commands/{executionId}/cancel endpoint
-  - Add input validation and error handling
+  - Add CommandExecutionRequestValidator for request validation
+  - Add error handling with Results<T> pattern
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 8.2, 8.4_
 
-- [ ] 10. Implement BoltTaskController
-  - Create controller with [Authorize] attribute
+- [ ] 10. Implement BoltTaskEndpoints
+  - Create endpoint group with authorization
   - Implement GET /api/bolt/tasks endpoint to list tasks
   - Implement GET /api/bolt/tasks/{taskName} endpoint for task details
   - Implement POST /api/bolt/tasks/execute endpoint
+  - Add TaskExecutionRequestValidator for request validation
   - Parse task metadata from Bolt CLI
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 11. Implement BoltPlanController
-  - Create controller with [Authorize] attribute
+- [ ] 11. Implement BoltPlanEndpoints
+  - Create endpoint group with authorization
   - Implement GET /api/bolt/plans endpoint to list plans
   - Implement GET /api/bolt/plans/{planName} endpoint for plan details
   - Implement POST /api/bolt/plans/execute endpoint
+  - Add PlanExecutionRequestValidator for request validation
   - Parse plan metadata from Bolt CLI
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 12. Implement InventoryController
-  - Create controller with [Authorize] attribute
+- [ ] 12. Implement InventoryEndpoints
+  - Create endpoint group with authorization
   - Implement GET /api/bolt/inventory endpoint
   - Implement GET /api/bolt/inventory/groups endpoint
   - Implement GET /api/bolt/inventory/groups/{groupName}/nodes endpoint
   - Add error handling for invalid inventory files
   - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 13. Implement ConfigurationController
-  - Create controller with [Authorize(Roles = "Admin")] attribute
+- [ ] 13. Implement ConfigurationEndpoints
+  - Create endpoint group with Admin role authorization
   - Implement GET /api/bolt/config endpoint
   - Implement PUT /api/bolt/config endpoint
   - Implement POST /api/bolt/config/validate endpoint
-  - Add validation and error handling
+  - Add BoltConfigurationValidator for request validation
+  - Add error handling
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 14. Implement HistoryController
-  - Create controller with [Authorize] attribute
+- [ ] 14. Implement HistoryEndpoints
+  - Create endpoint group with authorization
   - Implement GET /api/bolt/history endpoint with pagination
   - Add query parameters for date range filtering
   - Implement GET /api/bolt/history/{executionId} endpoint
@@ -161,11 +166,12 @@
   - _Requirements: 1.4, 2.3, 4.4, 7.3_
 
 - [ ] 17. Add input validation and security
-  - [ ] 17.1 Implement request validation
-    - Add data annotations to request models
+  - [ ] 17.1 Implement request validation with FluentValidation
+    - Create validators for all request models
     - Validate command arguments for injection attacks
     - Validate file paths to prevent directory traversal
-    - Add model validation middleware
+    - Register validators in dependency injection
+    - Validate requests in endpoints before processing
     - _Requirements: 1.1, 3.2, 4.2, 7.2_
   
   - [ ] 17.2 Configure security middleware
@@ -184,8 +190,9 @@
   - _Requirements: 6.1, 7.5_
 
 - [ ] 19. Add API documentation with Swagger
-  - Configure Swagger/OpenAPI generation
-  - Add XML documentation comments to controllers
+  - Configure Swagger/OpenAPI generation for Minimal APIs
+  - Add XML documentation comments to endpoint methods
+  - Use .WithOpenApi() and .Produces<T>() for endpoint metadata
   - Configure JWT authentication in Swagger UI
   - Add example requests and responses
   - _Requirements: All endpoints_
@@ -203,6 +210,8 @@
   - Register DbContext with connection string
   - Configure authentication and authorization services
   - Register SignalR services
+  - Register FluentValidation validators
+  - Map all endpoint groups in Program.cs
   - _Requirements: All_
 
 - [ ] 22. Create database seeding for initial data

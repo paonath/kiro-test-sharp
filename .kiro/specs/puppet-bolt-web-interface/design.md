@@ -38,156 +38,279 @@ graph TB
 
 ### Layered Architecture
 
-1. **Presentation Layer**: API Controllers, SignalR Hubs
+1. **Presentation Layer**: Minimal API Endpoints, SignalR Hubs
 2. **Business Logic Layer**: Services (BoltExecutionService, InventoryService, etc.)
 3. **Data Access Layer**: Repositories, Entity Framework DbContext
 4. **Infrastructure Layer**: Process management, file system access, external CLI interaction
+5. **Validation Layer**: FluentValidation validators for request validation
 
 ## Components and Interfaces
 
-### 1. API Controllers
+### 1. Minimal API Endpoints
 
-#### BoltCommandController
+Endpoints are organized into static classes that define route groups. Each endpoint class has a `MapEndpoints` method that registers routes.
+
+#### BoltCommandEndpoints
 Handles execution of arbitrary Bolt commands.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/commands")]
-[Authorize]
-public class BoltCommandController : ControllerBase
+public static class BoltCommandEndpoints
 {
-    // POST /api/bolt/commands/execute
-    Task<ActionResult<CommandExecutionResult>> ExecuteCommand(CommandExecutionRequest request);
-    
-    // GET /api/bolt/commands/{executionId}/status
-    Task<ActionResult<ExecutionStatus>> GetExecutionStatus(Guid executionId);
-    
-    // POST /api/bolt/commands/{executionId}/cancel
-    Task<ActionResult> CancelExecution(Guid executionId);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/commands")
+            .RequireAuthorization()
+            .WithTags("Bolt Commands");
+        
+        // POST /api/bolt/commands/execute
+        group.MapPost("/execute", ExecuteCommand);
+        
+        // GET /api/bolt/commands/{executionId}/status
+        group.MapGet("/{executionId}/status", GetExecutionStatus);
+        
+        // POST /api/bolt/commands/{executionId}/cancel
+        group.MapPost("/{executionId}/cancel", CancelExecution);
+    }
 }
 ```
 
-#### BoltTaskController
+#### BoltTaskEndpoints
 Manages Bolt task operations.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/tasks")]
-[Authorize]
-public class BoltTaskController : ControllerBase
+public static class BoltTaskEndpoints
 {
-    // GET /api/bolt/tasks
-    Task<ActionResult<IEnumerable<BoltTask>>> ListTasks();
-    
-    // GET /api/bolt/tasks/{taskName}
-    Task<ActionResult<BoltTaskDetails>> GetTaskDetails(string taskName);
-    
-    // POST /api/bolt/tasks/execute
-    Task<ActionResult<TaskExecutionResult>> ExecuteTask(TaskExecutionRequest request);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/tasks")
+            .RequireAuthorization()
+            .WithTags("Bolt Tasks");
+        
+        // GET /api/bolt/tasks
+        group.MapGet("/", ListTasks);
+        
+        // GET /api/bolt/tasks/{taskName}
+        group.MapGet("/{taskName}", GetTaskDetails);
+        
+        // POST /api/bolt/tasks/execute
+        group.MapPost("/execute", ExecuteTask);
+    }
 }
 ```
 
-#### BoltPlanController
+#### BoltPlanEndpoints
 Manages Bolt plan operations.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/plans")]
-[Authorize]
-public class BoltPlanController : ControllerBase
+public static class BoltPlanEndpoints
 {
-    // GET /api/bolt/plans
-    Task<ActionResult<IEnumerable<BoltPlan>>> ListPlans();
-    
-    // GET /api/bolt/plans/{planName}
-    Task<ActionResult<BoltPlanDetails>> GetPlanDetails(string planName);
-    
-    // POST /api/bolt/plans/execute
-    Task<ActionResult<PlanExecutionResult>> ExecutePlan(PlanExecutionRequest request);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/plans")
+            .RequireAuthorization()
+            .WithTags("Bolt Plans");
+        
+        // GET /api/bolt/plans
+        group.MapGet("/", ListPlans);
+        
+        // GET /api/bolt/plans/{planName}
+        group.MapGet("/{planName}", GetPlanDetails);
+        
+        // POST /api/bolt/plans/execute
+        group.MapPost("/execute", ExecutePlan);
+    }
 }
 ```
 
-#### InventoryController
+#### InventoryEndpoints
 Manages Bolt inventory.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/inventory")]
-[Authorize]
-public class InventoryController : ControllerBase
+public static class InventoryEndpoints
 {
-    // GET /api/bolt/inventory
-    Task<ActionResult<BoltInventory>> GetInventory();
-    
-    // GET /api/bolt/inventory/groups
-    Task<ActionResult<IEnumerable<string>>> GetGroups();
-    
-    // GET /api/bolt/inventory/groups/{groupName}/nodes
-    Task<ActionResult<IEnumerable<Node>>> GetNodesByGroup(string groupName);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/inventory")
+            .RequireAuthorization()
+            .WithTags("Inventory");
+        
+        // GET /api/bolt/inventory
+        group.MapGet("/", GetInventory);
+        
+        // GET /api/bolt/inventory/groups
+        group.MapGet("/groups", GetGroups);
+        
+        // GET /api/bolt/inventory/groups/{groupName}/nodes
+        group.MapGet("/groups/{groupName}/nodes", GetNodesByGroup);
+    }
 }
 ```
 
-#### ConfigurationController
+#### ConfigurationEndpoints
 Manages Bolt configuration.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/config")]
-[Authorize(Roles = "Admin")]
-public class ConfigurationController : ControllerBase
+public static class ConfigurationEndpoints
 {
-    // GET /api/bolt/config
-    Task<ActionResult<BoltConfiguration>> GetConfiguration();
-    
-    // PUT /api/bolt/config
-    Task<ActionResult> UpdateConfiguration(BoltConfiguration config);
-    
-    // POST /api/bolt/config/validate
-    Task<ActionResult<ValidationResult>> ValidateConfiguration(BoltConfiguration config);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/config")
+            .RequireAuthorization(policy => policy.RequireRole("Admin"))
+            .WithTags("Configuration");
+        
+        // GET /api/bolt/config
+        group.MapGet("/", GetConfiguration);
+        
+        // PUT /api/bolt/config
+        group.MapPut("/", UpdateConfiguration);
+        
+        // POST /api/bolt/config/validate
+        group.MapPost("/validate", ValidateConfiguration);
+    }
 }
 ```
 
-#### HistoryController
+#### HistoryEndpoints
 Manages command execution history.
 
 ```csharp
-[ApiController]
-[Route("api/bolt/history")]
-[Authorize]
-public class HistoryController : ControllerBase
+public static class HistoryEndpoints
 {
-    // GET /api/bolt/history
-    Task<ActionResult<PagedResult<ExecutionHistoryItem>>> GetHistory(
-        int page = 1, 
-        int pageSize = 20, 
-        DateTime? startDate = null, 
-        DateTime? endDate = null);
-    
-    // GET /api/bolt/history/{executionId}
-    Task<ActionResult<ExecutionHistoryDetails>> GetExecutionDetails(Guid executionId);
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/bolt/history")
+            .RequireAuthorization()
+            .WithTags("History");
+        
+        // GET /api/bolt/history
+        group.MapGet("/", GetHistory);
+        
+        // GET /api/bolt/history/{executionId}
+        group.MapGet("/{executionId}", GetExecutionDetails);
+    }
 }
 ```
 
-#### AuthController
+#### AuthEndpoints
 Handles authentication.
 
 ```csharp
-[ApiController]
-[Route("api/auth")]
-public class AuthController : ControllerBase
+public static class AuthEndpoints
 {
-    // POST /api/auth/login
-    Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request);
-    
-    // POST /api/auth/refresh
-    Task<ActionResult<AuthenticationResponse>> RefreshToken(RefreshTokenRequest request);
-    
-    // POST /api/auth/logout
-    Task<ActionResult> Logout();
+    public static void MapEndpoints(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/auth")
+            .WithTags("Authentication");
+        
+        // POST /api/auth/login
+        group.MapPost("/login", Login);
+        
+        // POST /api/auth/refresh
+        group.MapPost("/refresh", RefreshToken);
+        
+        // POST /api/auth/logout
+        group.MapPost("/logout", Logout)
+            .RequireAuthorization();
+    }
 }
 ```
 
-### 2. SignalR Hub
+### 2. Request Validators
+
+All request models are validated using FluentValidation before processing.
+
+#### CommandExecutionRequestValidator
+
+```csharp
+public class CommandExecutionRequestValidator : AbstractValidator<CommandExecutionRequest>
+{
+    public CommandExecutionRequestValidator()
+    {
+        RuleFor(x => x.Command)
+            .NotEmpty()
+            .MaximumLength(500);
+        
+        RuleFor(x => x.Arguments)
+            .NotNull();
+        
+        RuleFor(x => x.TimeoutSeconds)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(3600)
+            .When(x => x.TimeoutSeconds.HasValue);
+    }
+}
+```
+
+#### TaskExecutionRequestValidator
+
+```csharp
+public class TaskExecutionRequestValidator : AbstractValidator<TaskExecutionRequest>
+{
+    public TaskExecutionRequestValidator()
+    {
+        RuleFor(x => x.TaskName)
+            .NotEmpty()
+            .Matches(@"^[a-zA-Z0-9_:]+$")
+            .WithMessage("Task name must contain only alphanumeric characters, underscores, and colons");
+        
+        RuleFor(x => x.Targets)
+            .NotEmpty()
+            .WithMessage("At least one target must be specified");
+        
+        RuleFor(x => x.Parameters)
+            .NotNull();
+        
+        RuleFor(x => x.TimeoutSeconds)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(3600)
+            .When(x => x.TimeoutSeconds.HasValue);
+    }
+}
+```
+
+#### PlanExecutionRequestValidator
+
+```csharp
+public class PlanExecutionRequestValidator : AbstractValidator<PlanExecutionRequest>
+{
+    public PlanExecutionRequestValidator()
+    {
+        RuleFor(x => x.PlanName)
+            .NotEmpty()
+            .Matches(@"^[a-zA-Z0-9_:]+$")
+            .WithMessage("Plan name must contain only alphanumeric characters, underscores, and colons");
+        
+        RuleFor(x => x.Parameters)
+            .NotNull();
+        
+        RuleFor(x => x.TimeoutSeconds)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(3600)
+            .When(x => x.TimeoutSeconds.HasValue);
+    }
+}
+```
+
+#### LoginRequestValidator
+
+```csharp
+public class LoginRequestValidator : AbstractValidator<LoginRequest>
+{
+    public LoginRequestValidator()
+    {
+        RuleFor(x => x.Username)
+            .NotEmpty()
+            .MinimumLength(3)
+            .MaximumLength(50);
+        
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(8);
+    }
+}
+```
+
+### 3. SignalR Hub
 
 #### ExecutionHub
 Provides real-time updates for command execution.
@@ -209,7 +332,7 @@ public class ExecutionHub : Hub
 // - OnExecutionFailed(Guid executionId, string error)
 ```
 
-### 3. Core Services
+### 4. Core Services
 
 #### IBoltExecutionService
 Core service for executing Bolt commands.

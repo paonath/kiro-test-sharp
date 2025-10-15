@@ -10,9 +10,10 @@
 
 - **ORM**: Entity Framework Core
 - **Authentication**: JWT (JSON Web Tokens)
+- **Validation**: FluentValidation for request validation
 - **Real-time Communication**: SignalR for WebSocket streaming
 - **Logging**: Serilog with structured logging
-- **API Documentation**: Swagger/OpenAPI
+- **API Documentation**: Swagger/OpenAPI (with Swashbuckle for Minimal APIs)
 - **Testing**: xUnit, Moq
 - **Process Management**: System.Diagnostics.Process
 
