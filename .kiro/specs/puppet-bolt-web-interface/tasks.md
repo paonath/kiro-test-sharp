@@ -34,15 +34,15 @@
     - Set up role-based authorization policies
     - _Requirements: 5.3, 5.4, 5.5_
 
-- [ ] 4. Implement process management for Bolt CLI
-  - [ ] 4.1 Create IProcessManager interface and implementation
+- [x] 4. Implement process management for Bolt CLI
+  - [x] 4.1 Create IProcessManager interface and implementation
     - Implement ExecuteAsync method using System.Diagnostics.Process
     - Capture stdout and stderr with real-time callbacks
     - Implement process tracking by execution ID
     - Handle process cancellation and cleanup
     - _Requirements: 1.1, 1.2, 1.5_
   
-  - [ ] 4.2 Add timeout and resource management
+  - [x] 4.2 Add timeout and resource management
     - Implement configurable timeout for process execution
     - Add concurrent execution limits
     - Implement process cleanup on timeout or cancellation

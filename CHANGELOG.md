@@ -59,6 +59,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marked task 1 (project setup and core configuration) as completed in tasks.md
 - Marked task 2 (database layer and entities) as completed in tasks.md
 - Marked task 3 (authentication and authorization) as completed in tasks.md including all subtasks (3.1, 3.2, 3.3)
+- Marked task 4 (process management for Bolt CLI) as completed in tasks.md including all subtasks (4.1, 4.2)
+- IProcessManager interface with methods for executing external processes, checking process status, and killing processes
+- ProcessManager implementation with real-time stdout/stderr capture via callbacks
+- Process execution with configurable timeouts and automatic cleanup on timeout or cancellation
+- Concurrent execution limits using SemaphoreSlim to prevent resource exhaustion
+- Process tracking using ConcurrentDictionary for managing running processes by execution ID
+- ProcessExecutionResult model with comprehensive execution metadata (exit code, output, timing, status flags)
+- Graceful process termination with fallback to force kill
+- Service registration for IProcessManager in Program.cs with singleton lifetime
+- Comprehensive logging for process lifecycle events (start, completion, timeout, cancellation, errors)
 
 ### Removed
 - Migration guide moved from specs to docs directory for better organization
