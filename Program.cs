@@ -148,6 +148,9 @@ InventoryEndpoints.MapEndpoints(app);
 ConfigurationEndpoints.MapEndpoints(app);
 ExecutionHistoryEndpoints.MapEndpoints(app);
 
+// Map SignalR hub
+app.MapHub<BoltWebAPI.Hubs.ExecutionHub>("/hubs/execution");
+
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")

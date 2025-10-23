@@ -195,6 +195,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced ExecutionHistoryEntity with ExecutionId, ExecutionName, Targets, DurationMs, and ErrorMessage fields
 - Service registration for IExecutionHistoryService in Program.cs
 - Endpoint registration for ExecutionHistoryEndpoints in Program.cs
+- ExecutionHub SignalR hub for real-time execution updates
+- ExecutionEventModels.cs with event models: ExecutionEvent, ExecutionStartedEvent, ExecutionOutputEvent, ExecutionStateChangedEvent, ExecutionCompletedEvent, ExecutionFailedEvent, ExecutionCancelledEvent
+- Hub connection lifecycle logging (connect, disconnect with error handling)
+- Client subscription to specific execution updates via execution ID groups
+- Client subscription to user-specific execution updates via user ID groups
+- Client subscription to all execution updates (admin-only) via all_executions group
+- Subscription/unsubscription confirmation messages to clients
+- Ping/Pong health check for SignalR connection monitoring
+- SignalR notification methods in BoltExecutionService for real-time updates
+- ExecutionStarted notifications with execution metadata and parameters
+- ExecutionOutput notifications for real-time stdout/stderr streaming
+- ExecutionCompleted notifications with duration, exit code, and success status
+- ExecutionFailed notifications with error messages and details
+- ExecutionCancelled notifications with cancellation user tracking
+- Multi-group broadcasting: execution-specific, user-specific, and all-executions groups
+- Graceful error handling for SignalR notification failures (logged as warnings)
+- IHubContext<ExecutionHub> integration in BoltExecutionService constructor
+- SignalR hub mapping at /hubs/execution endpoint with JWT authorization
+- Real-time execution monitoring for frontend dashboards and command-line tools
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity

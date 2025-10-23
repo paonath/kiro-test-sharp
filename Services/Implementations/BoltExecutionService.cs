@@ -5,6 +5,8 @@ using BoltWebAPI.Data;
 using BoltWebAPI.Models.Domain;
 using BoltWebAPI.Models.Entities;
 using BoltWebAPI.Services.Interfaces;
+using BoltWebAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BoltWebAPI.Services.Implementations;
@@ -18,6 +20,7 @@ public class BoltExecutionService : IBoltExecutionService
     private readonly IConfiguration _configuration;
     private readonly ILogger<BoltExecutionService> _logger;
     private readonly BoltDbContext _dbContext;
+    private readonly IHubContext<ExecutionHub> _hubContext;
     private readonly ConcurrentDictionary<Guid, ExecutionTracker> _activeExecutions;
     private readonly string _boltExecutablePath;
     private readonly string _workingDirectory;
@@ -26,12 +29,14 @@ public class BoltExecutionService : IBoltExecutionService
         IProcessManager processManager,
         IConfiguration configuration,
         ILogger<BoltExecutionService> logger,
-        BoltDbContext dbContext)
+        BoltDbContext dbContext,
+        IHubContext<ExecutionHub> hubContext)
     {
         _processManager = processManager ?? throw new ArgumentNullException(nameof(processManager));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
         _activeExecutions = new ConcurrentDictionary<Guid, ExecutionTracker>();
 
         _boltExecutablePath = _configuration["Bolt:ExecutablePath"] ?? "bolt";
@@ -883,6 +888,181 @@ public class BoltExecutionService : IBoltExecutionService
         }
 
         return planDetails;
+    }
+
+    // ========================================================================
+    // SIGNALR NOTIFICATIONS
+    // ========================================================================
+
+    private async Task SendExecutionStartedNotificationAsync(
+        Guid executionId,
+        string executionType,
+        string executionName,
+        string userId,
+        string username,
+        string? targets = null)
+    {
+        try
+        {
+            var startedEvent = new ExecutionStartedEvent
+            {
+                ExecutionId = executionId,
+                ExecutionType = executionType,
+                ExecutionName = executionName,
+                UserId = userId,
+                Username = username,
+                State = "Running",
+                StartedAt = DateTime.UtcNow,
+                Targets = targets
+            };
+
+            await _hubContext.Clients.Group($"execution_{executionId}").SendAsync("ExecutionStarted", startedEvent);
+            await _hubContext.Clients.Group($"user_{userId}").SendAsync("ExecutionStarted", startedEvent);
+            await _hubContext.Clients.Group("all_executions").SendAsync("ExecutionStarted", startedEvent);
+
+            _logger.LogDebug("Sent ExecutionStarted notification for {ExecutionId}", executionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send ExecutionStarted notification for {ExecutionId}", executionId);
+        }
+    }
+
+    private async Task SendExecutionOutputNotificationAsync(
+        Guid executionId,
+        string outputType,
+        string output,
+        string userId)
+    {
+        try
+        {
+            var outputEvent = new ExecutionOutputEvent
+            {
+                ExecutionId = executionId,
+                OutputType = outputType,
+                Output = output,
+                UserId = userId
+            };
+
+            await _hubContext.Clients.Group($"execution_{executionId}").SendAsync("ExecutionOutput", outputEvent);
+
+            _logger.LogTrace("Sent ExecutionOutput notification for {ExecutionId}: {OutputType}", executionId, outputType);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send ExecutionOutput notification for {ExecutionId}", executionId);
+        }
+    }
+
+    private async Task SendExecutionCompletedNotificationAsync(
+        Guid executionId,
+        string executionType,
+        string executionName,
+        string userId,
+        string username,
+        bool success,
+        long durationMs,
+        int? exitCode = null,
+        string? summary = null)
+    {
+        try
+        {
+            var completedEvent = new ExecutionCompletedEvent
+            {
+                ExecutionId = executionId,
+                ExecutionType = executionType,
+                ExecutionName = executionName,
+                UserId = userId,
+                Username = username,
+                CompletedAt = DateTime.UtcNow,
+                DurationMs = durationMs,
+                ExitCode = exitCode,
+                Success = success,
+                Summary = summary
+            };
+
+            await _hubContext.Clients.Group($"execution_{executionId}").SendAsync("ExecutionCompleted", completedEvent);
+            await _hubContext.Clients.Group($"user_{userId}").SendAsync("ExecutionCompleted", completedEvent);
+            await _hubContext.Clients.Group("all_executions").SendAsync("ExecutionCompleted", completedEvent);
+
+            _logger.LogDebug("Sent ExecutionCompleted notification for {ExecutionId}", executionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send ExecutionCompleted notification for {ExecutionId}", executionId);
+        }
+    }
+
+    private async Task SendExecutionFailedNotificationAsync(
+        Guid executionId,
+        string executionType,
+        string executionName,
+        string userId,
+        string username,
+        string errorMessage,
+        int? exitCode = null,
+        string? errorDetails = null)
+    {
+        try
+        {
+            var failedEvent = new ExecutionFailedEvent
+            {
+                ExecutionId = executionId,
+                ExecutionType = executionType,
+                ExecutionName = executionName,
+                UserId = userId,
+                Username = username,
+                FailedAt = DateTime.UtcNow,
+                ErrorMessage = errorMessage,
+                ExitCode = exitCode,
+                ErrorDetails = errorDetails
+            };
+
+            await _hubContext.Clients.Group($"execution_{executionId}").SendAsync("ExecutionFailed", failedEvent);
+            await _hubContext.Clients.Group($"user_{userId}").SendAsync("ExecutionFailed", failedEvent);
+            await _hubContext.Clients.Group("all_executions").SendAsync("ExecutionFailed", failedEvent);
+
+            _logger.LogDebug("Sent ExecutionFailed notification for {ExecutionId}", executionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send ExecutionFailed notification for {ExecutionId}", executionId);
+        }
+    }
+
+    private async Task SendExecutionCancelledNotificationAsync(
+        Guid executionId,
+        string executionType,
+        string executionName,
+        string userId,
+        string username,
+        string? cancelledByUserId = null,
+        string? cancelledByUsername = null)
+    {
+        try
+        {
+            var cancelledEvent = new ExecutionCancelledEvent
+            {
+                ExecutionId = executionId,
+                ExecutionType = executionType,
+                ExecutionName = executionName,
+                UserId = userId,
+                Username = username,
+                CancelledAt = DateTime.UtcNow,
+                CancelledByUserId = cancelledByUserId,
+                CancelledByUsername = cancelledByUsername
+            };
+
+            await _hubContext.Clients.Group($"execution_{executionId}").SendAsync("ExecutionCancelled", cancelledEvent);
+            await _hubContext.Clients.Group($"user_{userId}").SendAsync("ExecutionCancelled", cancelledEvent);
+            await _hubContext.Clients.Group("all_executions").SendAsync("ExecutionCancelled", cancelledEvent);
+
+            _logger.LogDebug("Sent ExecutionCancelled notification for {ExecutionId}", executionId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to send ExecutionCancelled notification for {ExecutionId}", executionId);
+        }
     }
 
     // ========================================================================
