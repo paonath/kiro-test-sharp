@@ -122,6 +122,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured error responses with ErrorResponse model across all Bolt endpoints
 - User context extraction from ClaimsPrincipal for execution tracking
 - Endpoint registration in Program.cs for all Bolt endpoint groups
+- YamlDotNet NuGet package (v16.3.0) for YAML parsing and serialization
+- InventoryModels.cs with domain models: InventoryNode, InventoryGroup, Inventory, AddNodeRequest, UpsertGroupRequest, UpdateInventoryRequest
+- ConfigurationModels.cs with domain models: BoltConfiguration, TransportConfig, LogConfig, UpdateConfigurationRequest, UpdateTransportRequest, ConfigurationValidationResult
+- IInventoryService interface with 13 methods for inventory management (CRUD operations on nodes and groups, YAML import/export, validation)
+- InventoryService implementation with YamlDotNet integration for inventory.yaml parsing and serialization
+- Inventory node management: add, update, delete nodes with automatic group membership updates
+- Inventory group management: create, update, delete groups with nested group support
+- Complete inventory YAML import/export with validation
+- Inventory YAML validation with structure checks (version, duplicate detection)
+- IConfigurationService interface with 8 methods for Bolt configuration management
+- ConfigurationService implementation with YamlDotNet integration for bolt-project.yaml parsing
+- Bolt configuration CRUD operations with transport, modulepath, and global settings management
+- Transport configuration management for SSH, WinRM, local, docker, remote, and PCP transports
+- Configuration YAML validation with format version, concurrency, port, and timeout checks
+- Modulepath configuration management with directory existence validation
+- Configuration change audit logging to ConfigurationChangeEntity with type and description tracking
+- AddNodeRequestValidator with URI, name, and group validation
+- UpsertGroupRequestValidator with regex validation for group names (alphanumeric, underscore, hyphen)
+- UpdateInventoryRequestValidator with YAML syntax validation
+- UpdateConfigurationRequestValidator with YAML syntax validation
+- UpdateTransportRequestValidator with transport type validation and port/timeout range checks
+- InventoryEndpoints with 13 endpoints for complete inventory management via REST API
+- GET /api/inventory - Retrieve complete inventory structure
+- GET /api/inventory/nodes - List all nodes
+- GET /api/inventory/nodes/{nodeUri} - Get node details
+- GET /api/inventory/groups - List all groups
+- GET /api/inventory/groups/{groupName} - Get group details
+- GET /api/inventory/groups/{groupName}/nodes - Get nodes in group
+- POST /api/inventory/nodes - Add new node
+- PUT /api/inventory/nodes/{nodeUri} - Update node
+- DELETE /api/inventory/nodes/{nodeUri} - Delete node
+- PUT /api/inventory/groups - Create or update group
+- DELETE /api/inventory/groups/{groupName} - Delete group
+- PUT /api/inventory - Update entire inventory from YAML
+- POST /api/inventory/validate - Validate inventory YAML without saving
+- ConfigurationEndpoints with 7 endpoints for Bolt configuration management
+- GET /api/configuration - Retrieve complete Bolt configuration
+- GET /api/configuration/transport/{transport} - Get transport configuration
+- GET /api/configuration/modulepath - Get modulepath configuration
+- PUT /api/configuration - Update entire configuration from YAML
+- PUT /api/configuration/transport - Update transport configuration
+- PUT /api/configuration/modulepath - Update modulepath
+- POST /api/configuration/validate - Validate configuration YAML without saving
+- All inventory and configuration endpoints require JWT authorization
+- Comprehensive error handling with typed Results<T> responses for all inventory/configuration endpoints
+- User audit tracking for all inventory and configuration changes via ClaimsPrincipal
+- Database audit logging for configuration changes with ConfigurationType and ChangeDescription fields
+- Service registration for IInventoryService and IConfigurationService in Program.cs
+- Endpoint registration for InventoryEndpoints and ConfigurationEndpoints in Program.cs
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
@@ -134,6 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Marked task 3 (authentication and authorization) as completed in tasks.md including all subtasks (3.1, 3.2, 3.3)
 - Marked task 4 (process management for Bolt CLI) as completed in tasks.md including all subtasks (4.1, 4.2)
 - Updated global.json to use rollForward "latestMajor" for compatibility with .NET 9.0 SDK
+- Enhanced ConfigurationChangeEntity with ConfigurationType and ChangeDescription fields for better audit tracking
 
 ### Removed
 - Migration guide moved from specs to docs directory for better organization

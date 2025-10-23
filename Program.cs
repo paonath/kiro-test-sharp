@@ -118,6 +118,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
 builder.Services.AddScoped<IBoltExecutionService, BoltExecutionService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
+builder.Services.AddScoped<IConfigurationService, ConfigurationService>();
 
 var app = builder.Build();
 
@@ -141,6 +143,8 @@ AuthEndpoints.MapEndpoints(app);
 BoltCommandEndpoints.MapEndpoints(app);
 BoltTaskEndpoints.MapEndpoints(app);
 BoltPlanEndpoints.MapEndpoints(app);
+InventoryEndpoints.MapEndpoints(app);
+ConfigurationEndpoints.MapEndpoints(app);
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
