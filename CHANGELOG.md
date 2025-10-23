@@ -85,6 +85,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Service interface methods for execution management (status, cancellation)
 - Service interface methods for task and plan discovery
 - Comprehensive XML documentation for all interface methods with exception specifications
+- BoltExecutionService implementation with complete Bolt CLI integration
+- Command execution with real-time output capture and database logging
+- Task execution with per-node result parsing from JSON output
+- Plan execution with return value extraction and logging
+- Execution status tracking with in-memory ConcurrentDictionary and database persistence
+- Execution cancellation via ProcessManager integration
+- Task discovery with ListTasksAsync and GetTaskDetailsAsync methods
+- Plan discovery with ListPlansAsync and GetPlanDetailsAsync methods
+- JSON parsing for Bolt CLI output (task results, plan return values, metadata)
+- ExecutionState conversion helpers between Domain and Entity enums
+- Comprehensive error handling with KeyNotFoundException for missing resources
+- Database audit logging for all executions with user tracking
+- Service registration in Program.cs with Scoped lifetime
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity

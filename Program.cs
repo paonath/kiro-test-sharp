@@ -117,6 +117,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 // Register services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
+builder.Services.AddScoped<IBoltExecutionService, BoltExecutionService>();
 
 var app = builder.Build();
 
