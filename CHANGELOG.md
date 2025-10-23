@@ -69,6 +69,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Graceful process termination with fallback to force kill
 - Service registration for IProcessManager in Program.cs with singleton lifetime
 - Comprehensive logging for process lifecycle events (start, completion, timeout, cancellation, errors)
+- CLAUDE.md developer guidance document with project architecture, commands, patterns, and development workflows
+- Claude implementation plan (claude-implementation-plan.md) with detailed 6-phase implementation roadmap
+- Claude implementation progress tracker (claude-implementation-progress.md) for monitoring development progress
+- BoltModels.cs domain models for Bolt operations including request/response models for commands, tasks, and plans
+- CommandExecutionRequest, TaskExecutionRequest, and PlanExecutionRequest models with validation-ready properties
+- CommandExecutionResult, TaskExecutionResult, and PlanExecutionResult models with comprehensive execution metadata
+- NodeResult model for per-node task execution results
+- ExecutionStatus model for tracking ongoing execution state
+- BoltTask, BoltTaskDetails, and TaskParameter models for task discovery and metadata
+- BoltPlan, BoltPlanDetails, and PlanParameter models for plan discovery and metadata
+- ExecutionState enum (Queued, Running, Completed, Failed, Cancelled) matching database entity
+
+### Changed
+- Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
+- Replaced data annotation validation with FluentValidation for better separation of concerns
+- Updated design document to reflect Minimal API patterns with `Results<T>` return types
+- Updated implementation tasks to include FluentValidation validators for all request models
+- Enhanced project structure documentation to include `.kiro/` directory organization
+- Marked task 1 (project setup and core configuration) as completed in tasks.md
+- Marked task 2 (database layer and entities) as completed in tasks.md
+- Marked task 3 (authentication and authorization) as completed in tasks.md including all subtasks (3.1, 3.2, 3.3)
+- Marked task 4 (process management for Bolt CLI) as completed in tasks.md including all subtasks (4.1, 4.2)
+- Updated global.json to use rollForward "latestMajor" for compatibility with .NET 9.0 SDK
 
 ### Removed
 - Migration guide moved from specs to docs directory for better organization

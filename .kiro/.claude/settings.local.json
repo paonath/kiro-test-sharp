@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Read(//c/Git/PH/kiro-test-sharp/**)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(dotnet build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: add Bolt domain models for command, task, and plan execution\n\nImplement comprehensive domain models for Bolt operations including:\n\n- Request models: CommandExecutionRequest, TaskExecutionRequest, PlanExecutionRequest\n- Response models: CommandExecutionResult, TaskExecutionResult, PlanExecutionResult\n- Supporting models: NodeResult, ExecutionStatus, ExecutionState enum\n- Task discovery models: BoltTask, BoltTaskDetails, TaskParameter\n- Plan discovery models: BoltPlan, BoltPlanDetails, PlanParameter\n\nAll models include XML documentation and use appropriate C# naming conventions.\nModels are designed to support FluentValidation integration.\n\nUpdates:\n- Update global.json to support .NET 9.0 SDK with rollForward latestMajor\n- Update CHANGELOG.md with Phase 1.1 completion\n- Update claude-implementation-progress.md with Task 1.1 completion\n\nPhase 1.1 of 6 complete - Core Bolt Execution Service in progress\n\nGenerated with Claude Code\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
