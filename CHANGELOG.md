@@ -80,6 +80,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BoltTask, BoltTaskDetails, and TaskParameter models for task discovery and metadata
 - BoltPlan, BoltPlanDetails, and PlanParameter models for plan discovery and metadata
 - ExecutionState enum (Queued, Running, Completed, Failed, Cancelled) matching database entity
+- IBoltExecutionService interface defining core Bolt execution operations
+- Service interface methods for executing commands, tasks, and plans
+- Service interface methods for execution management (status, cancellation)
+- Service interface methods for task and plan discovery
+- Comprehensive XML documentation for all interface methods with exception specifications
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
