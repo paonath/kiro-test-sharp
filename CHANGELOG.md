@@ -171,6 +171,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Database audit logging for configuration changes with ConfigurationType and ChangeDescription fields
 - Service registration for IInventoryService and IConfigurationService in Program.cs
 - Endpoint registration for InventoryEndpoints and ConfigurationEndpoints in Program.cs
+- ExecutionHistoryModels.cs with domain models: ExecutionHistoryRecord, ExecutionHistoryResponse, ExecutionHistoryQuery, ExecutionStatistics
+- IExecutionHistoryService interface with 5 methods for execution history querying and management
+- ExecutionHistoryService implementation with advanced pagination, filtering, and sorting
+- Execution history querying with multiple filters: type, state, user, name, date range
+- Pagination support with configurable page size (1-100 records per page)
+- Multi-field sorting: StartedAt, CompletedAt, ExecutionName, State, DurationMs (ascending/descending)
+- Execution statistics calculation: total, completed, failed, cancelled, running, queued counts
+- Success rate calculation and average execution duration metrics
+- Execution grouping by type and state for statistics dashboard
+- Old execution cleanup functionality with date-based deletion
+- Individual execution record deletion with user audit tracking
+- ExecutionHistoryQueryValidator with comprehensive validation for all query parameters
+- ExecutionHistoryEndpoints with 5 REST endpoints for history management
+- GET /api/history - Paginated execution history with filters and sorting
+- GET /api/history/{executionId} - Get specific execution details
+- GET /api/history/statistics - Get execution statistics for time period
+- DELETE /api/history/cleanup - Delete old execution records (bulk cleanup)
+- DELETE /api/history/{executionId} - Delete specific execution record
+- All history endpoints require JWT authorization
+- Comprehensive error handling with typed Results<T> responses for history endpoints
+- User audit tracking for deletion operations via ClaimsPrincipal
+- Enhanced ExecutionHistoryEntity with ExecutionId, ExecutionName, Targets, DurationMs, and ErrorMessage fields
+- Service registration for IExecutionHistoryService in Program.cs
+- Endpoint registration for ExecutionHistoryEndpoints in Program.cs
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
