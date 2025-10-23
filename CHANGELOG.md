@@ -105,6 +105,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Command injection prevention through unsafe character detection (&&, ||, ;, |, >, <, `, $()
 - Target array validation ensuring non-empty values
 - Auto-registration of validators via AddValidatorsFromAssemblyContaining
+- BoltCommandEndpoints with three endpoints: POST /api/bolt/commands/execute, GET /api/bolt/commands/{executionId}/status, POST /api/bolt/commands/{executionId}/cancel
+- Command execution endpoint with validation, user authentication, comprehensive error handling, and logging
+- Execution status retrieval endpoint for monitoring command execution state
+- Execution cancellation endpoint for aborting running commands
+- BoltTaskEndpoints with three endpoints: GET /api/bolt/tasks (list), GET /api/bolt/tasks/{taskName} (details), POST /api/bolt/tasks/execute
+- Task listing endpoint returning all available Bolt tasks from configured modules
+- Task details endpoint with parameter metadata and descriptions
+- Task execution endpoint with per-node result tracking and comprehensive logging
+- BoltPlanEndpoints with three endpoints: GET /api/bolt/plans (list), GET /api/bolt/plans/{planName} (details), POST /api/bolt/plans/execute
+- Plan listing endpoint returning all available Bolt plans from configured modules
+- Plan details endpoint with parameter metadata and descriptions
+- Plan execution endpoint with return value extraction and logging
+- All Bolt endpoints require JWT authorization via RequireAuthorization()
+- Swagger/OpenAPI integration for all Bolt endpoints with tagged groups (Bolt Commands, Bolt Tasks, Bolt Plans)
+- Structured error responses with ErrorResponse model across all Bolt endpoints
+- User context extraction from ClaimsPrincipal for execution tracking
+- Endpoint registration in Program.cs for all Bolt endpoint groups
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity

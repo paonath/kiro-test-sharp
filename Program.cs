@@ -138,6 +138,9 @@ app.UseAuthorization();
 
 // Map endpoint groups
 AuthEndpoints.MapEndpoints(app);
+BoltCommandEndpoints.MapEndpoints(app);
+BoltTaskEndpoints.MapEndpoints(app);
+BoltPlanEndpoints.MapEndpoints(app);
 
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
