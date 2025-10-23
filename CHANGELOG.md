@@ -98,6 +98,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive error handling with KeyNotFoundException for missing resources
 - Database audit logging for all executions with user tracking
 - Service registration in Program.cs with Scoped lifetime
+- CommandExecutionRequestValidator with security validation for command injection prevention
+- TaskExecutionRequestValidator with regex validation for task names and target validation
+- PlanExecutionRequestValidator with regex validation for plan names
+- Timeout validation (1-3600 seconds) across all execution request validators
+- Command injection prevention through unsafe character detection (&&, ||, ;, |, >, <, `, $()
+- Target array validation ensuring non-empty values
+- Auto-registration of validators via AddValidatorsFromAssemblyContaining
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
