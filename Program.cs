@@ -9,6 +9,7 @@ using BoltWebAPI.Data;
 using BoltWebAPI.Endpoints;
 using BoltWebAPI.Services.Interfaces;
 using BoltWebAPI.Services.Implementations;
+using BoltWebAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 // Add services to the container
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -114,6 +117,9 @@ builder.Services.AddDbContext<BoltDbContext>(options =>
 // Register FluentValidation validators
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Configure Rate Limiting
+builder.Services.AddRateLimitingPolicies(builder.Configuration);
+
 // Register services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IProcessManager, ProcessManager>();
@@ -125,6 +131,8 @@ builder.Services.AddScoped<IExecutionHistoryService, ExecutionHistoryService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -135,6 +143,8 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseSerilogRequestLogging();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -155,6 +165,9 @@ app.MapHub<BoltWebAPI.Hubs.ExecutionHub>("/hubs/execution");
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")
     .WithTags("Health");
+
+// Seed database
+await app.SeedDatabaseAsync();
 
 try
 {

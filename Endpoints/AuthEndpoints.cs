@@ -14,12 +14,14 @@ public static class AuthEndpoints
 
         group.MapPost("/login", Login)
             .WithName("Login")
+            .RequireRateLimiting("AuthenticationPolicy")
             .Produces<AuthenticationResponse>(StatusCodes.Status200OK)
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
 
         group.MapPost("/refresh", RefreshToken)
             .WithName("RefreshToken")
+            .RequireRateLimiting("AuthenticationPolicy")
             .Produces<AuthenticationResponse>(StatusCodes.Status200OK)
             .Produces<ErrorResponse>(StatusCodes.Status400BadRequest)
             .Produces<ErrorResponse>(StatusCodes.Status401Unauthorized);
@@ -147,12 +149,4 @@ public static class AuthEndpoints
             );
         }
     }
-}
-
-public class ErrorResponse
-{
-    public string Message { get; set; } = string.Empty;
-    public string ErrorCode { get; set; } = string.Empty;
-    public Dictionary<string, string[]>? ValidationErrors { get; set; }
-    public string? TraceId { get; set; }
 }

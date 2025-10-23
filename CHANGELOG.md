@@ -214,6 +214,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - IHubContext<ExecutionHub> integration in BoltExecutionService constructor
 - SignalR hub mapping at /hubs/execution endpoint with JWT authorization
 - Real-time execution monitoring for frontend dashboards and command-line tools
+- GlobalExceptionHandler middleware implementing IExceptionHandler for centralized error handling
+- Exception mapping to appropriate HTTP status codes (400, 401, 403, 404, 408, 409, 500, 501)
+- Development vs Production error responses (stack traces only in Development)
+- Structured error responses with ErrorResponse model across entire API
+- ErrorResponse model moved to Models/Domain for reusability across all endpoints
+- RateLimitingPolicies extension method for configuring rate limiting policies
+- Default policy: 100 requests per minute per user with 5-request queue
+- Execution policy: 10 executions per minute per user (no queue)
+- Authentication policy: 5 login attempts per minute per IP address (no queue)
+- HistoryQuery policy: 30 queries per minute per user with 2-request queue
+- Global rate limiter: 1000 requests per minute across all users
+- User-based and IP-based rate limiting partitioning
+- Rate limit rejection with 429 status code and RetryAfter header
+- Configurable rate limits via appsettings.json RateLimiting section
+- DatabaseSeeder for automatic initial data seeding
+- Default admin user creation on first startup (username: admin, password: Admin123!)
+- Configurable default user credentials via appsettings.json DefaultUser section
+- Database seeding extension method (SeedDatabaseAsync) for easy integration
+- Warning log for default password change requirement
+- appsettings.json updated with rate limiting and default user configuration
+- GlobalExceptionHandler registered in Program.cs with UseExceptionHandler middleware
+- Rate limiting middleware registered in Program.cs with UseRateLimiter
+- Database seeding called during application startup
+- Rate limiting applied to authentication endpoints (login, refresh)
 
 ### Changed
 - Migrated architecture from traditional Controllers to Minimal APIs for improved performance and simplicity
